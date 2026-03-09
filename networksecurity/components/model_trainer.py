@@ -26,6 +26,8 @@ from sklearn.ensemble import (
     RandomForestClassifier,
 )
 
+import dagshub
+dagshub.init(repo_owner='mhz15019', repo_name='Network-Security', mlflow=True)
 
 
 class ModelTrainer:
@@ -38,7 +40,6 @@ class ModelTrainer:
    
      
     def track_mlflow(self, best_model, classificationmetric):
-        mlflow.set_tracking_uri("file:./mlruns") 
         with mlflow.start_run():
             f1_score=classificationmetric.f1_score
             precision_score=classificationmetric.precision_score
@@ -68,15 +69,15 @@ class ModelTrainer:
                 # 'criterion':['gini', 'entropy', 'log_loss'],
                 
                 # 'max_features':['sqrt','log2',None],
-                'n_estimators': [8,256]
+                'n_estimators': [8]
             },
             "Gradient Boosting":{
                 # 'loss':['log_loss', 'exponential'],
-                'learning_rate':[.1,.01],
-                'subsample':[0.6,0.9],
+                'learning_rate':[.1],
+                'subsample':[0.6],
                 # 'criterion':['squared_error', 'friedman_mse'],
                 # 'max_features':['auto','sqrt','log2'],
-                'n_estimators': [8,256]
+                'n_estimators': [6]
             },
             "Logistic Regression":{},
             "AdaBoost":{
@@ -117,6 +118,8 @@ class ModelTrainer:
 
         networkModel=NetworkModel(preprocessor=preprocessor,model=best_model)
         save_object(self.model_trainer_config.trained_model_file_path,obj=networkModel)
+        
+        save_object("final_model/model.pkl",best_model)
         
         
 
